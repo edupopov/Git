@@ -1,0 +1,39 @@
+# 1. Criar uma pasta para o projeto
+mkdir meu_projeto_git      # mkdir = make directory (cria uma pasta)
+cd meu_projeto_git         # cd = change directory (entra na pasta)
+
+# 2. Inicializar o repositório Git
+git init                   # Cria um repositório Git vazio dentro da pasta
+
+# 3. Configurar usuário (apenas precisa ser feito 1 vez por computador)
+git config --global user.name "Seu Nome"         # Nome que ficará nos commits
+git config --global user.email "seu@email.com"   # Email que ficará nos commits
+
+# 4. Criar um arquivo simples
+echo "Olá Git!" > arquivo.txt   # Cria um arquivo chamado arquivo.txt com texto dentro
+
+# 5. Verificar o status do repositório
+git status                 # Mostra quais arquivos estão sendo rastreados ou não
+
+# 6. Adicionar o arquivo ao "stage" (área de preparação)
+git add arquivo.txt        # Marca o arquivo para ser incluído no próximo commit
+
+# 7. Criar o primeiro commit
+git commit -m "Primeiro commit: adicionando arquivo.txt"  
+# -m = mensagem do commit (explica o que foi feito)
+
+# 8. Alterar o arquivo
+echo "Linha nova no Git!" >> arquivo.txt   # >> adiciona texto no final do arquivo
+
+# 9. Verificar o status novamente
+git status                 # Mostra que o arquivo foi modificado
+
+# 10. Verificar diferenças
+git diff                   # Mostra o que foi alterado no arquivo antes do commit
+
+# 11. Adicionar e commitar as mudanças
+git add arquivo.txt
+git commit -m "Atualização: adicionei nova linha ao arquivo.txt"
+
+# 12. Visualizar histórico de commits
+git log                    # Mostra todos os commits feitos no repositório

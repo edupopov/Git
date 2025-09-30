@@ -1,254 +1,61 @@
-#!/usr/bin/env bash
-# =====================================================================
-# Exercício unificado de Git - README: criação, evolução e restauração
-# Autor: Você :)
-# Público: iniciantes em Git (aula prática)
-#
-# O que este script faz:
-# 1) Cria uma pasta de trabalho única (com timestamp) para evitar conflitos.
-# 2) Inicializa um repositório Git.
-# 3) (Opcional) Configura user.name e user.email se desejar.
-# 4) Cria README v1 + commit.
-# 5) Evolui para v2 (adiciona seções) + commit.
-# 6) Cria tags v1 e v2 para facilitar referência.
-# 7) Mostra histórico, diffs e conteúdo por commit.
-# 8) Restaura o README ao estado da v1 (sem trocar de branch) e commita (v3).
-# 9) Demonstra também como reverter o commit v2 via `git revert` (opc.).
-# 10) Exibe resumo final e comandos úteis para inspecionar o repo.
-#
-# Observações importantes:
-# - O script é "didático": imprime cada passo e o comando executado.
-# - `set -e` aborta o script se algum comando falhar.
-# - Você pode reexecutar quantas vezes quiser: cada run cria uma nova pasta.
-# =====================================================================
+Criação do README.md
+Alteração do README.md
+Versionamento em commits diferentes
+Voltar o README.md para uma versão anterior
 
-set -euo pipefail
+1. Criar uma pasta para o projeto
+mkdir projeto_readme_git        # Cria a pasta do projeto
+cd projeto_readme_git           # Entra na pasta
 
-# ----------------------------- Opções ---------------------------------
-# Se quiser que o script configure user.name/email globalmente (apenas 1x por máquina),
-# mude para "true" e preencha abaixo. Caso contrário, deixamos "false".
-CONFIGURAR_GIT_GLOBAL=false
-GIT_USER_NAME="Seu Nome"
-GIT_USER_EMAIL="voce@exemplo.com"
+2. Inicializar o repositório Git
+git init                        # Cria um repositório Git vazio
 
-# (Opcional) Abrir VS Code no fim (se 'code' estiver no PATH)
-ABRIR_VSCODE=false
+3. Configurar usuário (somente 1 vez por computador)
+git config --global user.name "Seu Nome"        # Nome que aparecerá nos commits
+git config --global user.email "seu@email.com"  # Email associado aos commits
 
-# Demonstrar também um revert do commit v2? (mantém histórico linear no remoto)
-DEMONSTRAR_REVERT=false
-# ---------------------------------------------------------------------
+4. Criar o README inicial (v1)
+echo "# Meu Projeto" > README.md                # Cria README.md com um título
+echo "Primeira versão do README" >> README.md   # Adiciona um texto
 
-# Carimbo único para o diretório de trabalho
-TS="$(date +%Y%m%d-%H%M%S)"
-WORKDIR="exercicio-readme-git-${TS}"
+5. Verificar o status
+git status                                      # Mostra arquivos não rastreados
 
-# Função utilitária: imprime um título bonito
-titulo() {
-  echo
-  echo "====================================================================="
-  echo ">> $*"
-  echo "====================================================================="
-}
+6. Adicionar o README ao stage
+git add README.md                               # Prepara o arquivo para commit
 
-# Função utilitária: imprime passos com o comando
-passo() {
-  echo
-  echo "\$ $*"
-  eval "$@"
-}
+7. Criar o primeiro commit (v1)
+git commit -m "v1: cria README com título e descrição inicial"
 
-# Introdução
-titulo "Exercício de Git - Início"
-echo "Este script criará um repositório de exemplo em: ${WORKDIR}"
-echo "Git version:"
-git --version || { echo "Git não encontrado no PATH."; exit 1; }
+8. Alterar o README (v2)
+echo "## Como executar" >> README.md
+echo "1. Passo 1" >> README.md
+echo "2. Passo 2" >> README.md
 
-# Configuração global (opcional)
-if [[ "${CONFIGURAR_GIT_GLOBAL}" == "true" ]]; then
-  titulo "Configurando Git globalmente (opcional)"
-  passo git config --global user.name "\"${GIT_USER_NAME}\""
-  passo git config --global user.email "\"${GIT_USER_EMAIL}\""
-  echo "Configuração global atual:"
-  git config --global --list || true
-else
-  echo "Pulando configuração global de user.name e user.email."
-  echo "Caso precise, rode depois:"
-  echo "  git config --global user.name \"Seu Nome\""
-  echo "  git config --global user.email \"voce@exemplo.com\""
-fi
+9. Verificar status e diferenças
+git status                                      # Mostra que README foi modificado
+git diff                                        # Mostra o que mudou
 
-# Cria diretório de trabalho e entra nele
-titulo "Criando diretório de trabalho"
-passo mkdir -p "${WORKDIR}"
-cd "${WORKDIR}"
+10. Adicionar e commitar as mudanças (v2)
+git add README.md
+git commit -m "v2: adiciona seção 'Como executar'"
 
-# Inicializa repositório
-titulo "Inicializando repositório Git"
-passo git init
+11. Evoluir mais uma vez o README (v3)
+echo "## Licença" >> README.md
+echo "MIT" >> README.md
+git add README.md
+git commit -m "v3: adiciona seção de licença"
 
-# Dica: configuração local (só neste repositório) — útil para aulas/labs
-# (Descomente se quiser configurar localmente em vez de global)
-# passo git config user.name "\"Aluno Lab\""
-# passo git config user.email "\"aluno@example.local\""
+12. Ver histórico de commits
+git log --oneline                              # Mostra o histórico resumido
 
-# Cria README v1
-titulo "Criando README v1"
-cat > README.md << 'EOF'
-# Meu Projeto
+13. Restaurar o README para a versão 1
+git checkout HEAD~2 -- README.md               # Restaura README do commit v1
+cat README.md                                  # Mostra conteúdo restaurado
 
-Versão 1 do README.
-- Objetivo: praticar Git básico (init, add, commit, log, diff, restore, revert).
-- Ambiente sugerido: Git Bash + VS Code (opcional).
+14. Criar novo commit (v4 - restauração)
+git add README.md
+git commit -m "v4: restaura README ao estado da v1"
 
-## Conteúdo
-Este repositório demonstra:
-1. Criação de README.
-2. Versionamento com commits.
-3. Evolução do conteúdo.
-4. Restauração para versão anterior.
-EOF
-
-echo
-echo "Conteúdo atual do README.md (v1):"
-echo "---------------------------------------------------------------------"
-cat README.md
-echo "---------------------------------------------------------------------"
-
-# Status, stage e commit v1
-titulo "Stage e commit da v1"
-passo git status
-passo git add README.md
-passo git commit -m "\"v1: cria README com título, objetivo e conteúdo básico\""
-
-# Evolui para v2 (adiciona seções)
-titulo "Evoluindo README para v2 (novas seções)"
-cat >> README.md << 'EOF'
-
-## Como executar
-1. Instale dependências (se houver).
-2. Execute o aplicativo (ex.: `npm start`, `python app.py`, etc.).
-
-## Licença
-MIT
-
-## Notas
-- Esta é a versão 2 do README, incluindo seções adicionais.
-EOF
-
-echo
-echo "Diferenças do working tree vs último commit (antes do stage):"
-echo "---------------------------------------------------------------------"
-git diff README.md || true
-echo "---------------------------------------------------------------------"
-
-# Stage e commit v2
-titulo "Stage e commit da v2"
-passo git add README.md
-passo git commit -m "\"v2: adiciona seções 'Como executar', 'Licença' e 'Notas' ao README\""
-
-# Mostra histórico (compacto) e salva hashes
-titulo "Histórico até aqui"
-passo git log --oneline --decorate --graph -n 5
-
-# Captura os hashes de v2 e v1 para referência (os dois commits mais recentes)
-HASH_V2="$(git rev-list --max-count=1 HEAD)"
-HASH_V1="$(git rev-list --max-count=1 HEAD~1)"
-
-echo
-echo "HASH_V2 (commit atual): ${HASH_V2}"
-echo "HASH_V1 (commit anterior): ${HASH_V1}"
-
-# Cria tags v1 e v2 (para facilitar restaurações)
-titulo "Criando tags v1 e v2"
-passo git tag v2 "${HASH_V2}"
-passo git tag v1 "${HASH_V1}"
-echo "Tags criadas:"
-passo git tag --list
-
-# Exibe o conteúdo do README em v1 e v2 sem trocar de branch (git show)
-titulo "Lendo README.md diretamente de cada commit/tag"
-echo ">>> Conteúdo em v1 (tag):"
-passo git show v1:README.md
-echo
-echo ">>> Conteúdo em v2 (tag):"
-passo git show v2:README.md
-
-# Demonstração: restaurar arquivo ao estado da v1 (usando git restore)
-titulo "Restaurando README ao estado da v1 (git restore --source v1)"
-passo git restore --source v1 README.md
-
-echo
-echo "Conteúdo do README após restore (estado de v1, ainda sem commit):"
-echo "---------------------------------------------------------------------"
-cat README.md
-echo "---------------------------------------------------------------------"
-
-# Commit da restauração (v3)
-titulo "Commit da restauração (v3)"
-passo git add README.md
-passo git commit -m "\"v3: restaura README ao conteúdo da v1 (via git restore)\""
-
-# Histórico após v3
-titulo "Histórico após v3 (restore)"
-passo git log --oneline --decorate --graph -n 10
-
-# (Opcional) Demonstração de git revert do commit v2
-if [[ "${DEMONSTRAR_REVERT}" == "true" ]]; then
-  titulo "OPCIONAL: Revertendo o commit v2 (cria novo commit que desfaz v2)"
-  # Observação: se o v3 já trouxe o conteúdo de volta, este revert pode resultar
-  # em 'no changes' dependendo das diferenças. Mantemos apenas para fins didáticos.
-  passo git revert --no-edit "${HASH_V2}" || true
-  passo git log --oneline --decorate --graph -n 12
-fi
-
-# Mostrar dicas úteis
-titulo "Comandos úteis para explorar o repositório"
-cat << 'TIPS'
-# Ver histórico compacto:
-git log --oneline --decorate --graph --all
-
-# Ver diferenças entre dois commits/tags:
-git diff v1 v2 -- README.md
-
-# Mostrar arquivo como era em um commit/tag:
-git show v1:README.md
-
-# Restaurar apenas um arquivo a partir de uma tag/commit (sem mudar de branch):
-git restore --source v1 README.md
-
-# Método antigo (ainda funciona) para restaurar arquivo específico:
-git checkout v1 -- README.md
-
-# Reverter um commit (cria novo commit que desfaz outro):
-git revert <hash_do_commit_alvo>
-
-# Evite para iniciantes (perigoso): mexe no ponteiro do branch e pode descartar trabalho:
-git reset --hard <hash>
-TIPS
-
-# (Opcional) Abrir VS Code
-if [[ "${ABRIR_VSCODE}" == "true" && "$(command -v code || true)" != "" ]]; then
-  titulo "Abrindo VS Code no repositório (opcional)"
-  passo code .
-else
-  echo
-  echo "Se quiser abrir no VS Code mais tarde:  code ."
-fi
-
-# Resumo final
-titulo "Resumo final"
-echo "Repositório criado em: $(pwd)"
-echo "Commits criados:"
-git log --oneline --decorate --graph -n 10
-echo
-echo "Tags existentes:"
-git tag --list
-echo
-echo "Conteúdo atual do README.md (após v3 - restaurado ao estado da v1):"
-echo "---------------------------------------------------------------------"
-cat README.md
-echo "---------------------------------------------------------------------"
-
-echo
-echo "FIM: exercício concluído com sucesso!"
-echo "Explore o repo à vontade. Para repetir o exercício, rode o script novamente."
+15. Ver histórico completo
+git log --oneline --graph                      # Mostra todos os commits na linha do tempo
